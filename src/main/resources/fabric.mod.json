@@ -1,0 +1,33 @@
+{
+  "schemaVersion": 1,
+  "id": "meteor-trashy-addon",
+  "version": "${version}",
+  "name": "Meteor Trashy Addon",
+  "description": "A trashy collection of meteor addons",
+  "authors": [
+    "eliminatedphi"
+  ],
+  "contact": {
+    "repo": "https://github.com/MeteorDevelopment/meteor-addon-template"
+  },
+  "icon": "assets/icon.png",
+  "environment": "client",
+  "entrypoints": {
+    "meteor": [
+      "phi.eliminated.trashyaddon.TrashyAddon"
+    ]
+  },
+  "mixins": [
+    "addon.mixins.json",
+    "meteorclient_addon.mixins.json"
+  ],
+  "accessWidener": "trashy-addon.aw",
+  "custom": {
+    "meteor-client:color": "225,25,25"
+  },
+  "depends": {
+    "java": ">=${jdk_version}",
+    "minecraft": "${minecraft_version}",
+    "meteor-client": "*"
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "required": true,
+  "package": "phi.eliminated.trashyaddon.mixin",
+  "compatibilityLevel": "JAVA_25",
+  "client": [
+    "AbstractContainerScreenMixin",
+    "ClientPacketListenerMixin",
+    "ItemFrameRendererMixin",
+    "ClientLevelMixin",
+    "MultiPlayerGameModeMixin",
+    "KeyboardInputMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

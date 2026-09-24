@@ -1,0 +1,12 @@
+{
+  "required": true,
+  "package": "phi.eliminated.trashyaddon.mixin.meteorclient",
+  "compatibilityLevel": "JAVA_25",
+  "client": [
+    "ESPMixin",
+    "NoRenderMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

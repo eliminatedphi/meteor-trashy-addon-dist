@@ -1,0 +1,9 @@
+Public portion of this addon is made available under the GNU General
+Public License v3.0 only (SPDX license identifier GPL-3.0-only). You
+should comply with its terms if you are redistributing any part of this
+addon in an applicable form. You can find the full text of GNU General
+Public License v3.0 in LICENSE.GPL .
+
+Some classes in the phi.eliminated.trashyaddon.commands.argument package
+are derived from xpple's clientarguments library. The license text for
+these files can be found in LICENSE.MIT.
