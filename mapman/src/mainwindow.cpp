@@ -196,8 +196,7 @@ mapman_main_window::mapman_main_window() : QMainWindow()
             std::vector<map_t> m;
             if (load_dumps(fn.toStdString().c_str(), m))
             {
-                for (auto &map : m)
-                    l->set_map(map);
+                l->set_maps(m);
                 sv->refresh();
                 uncollected.clear();
                 update_statusbar();
@@ -293,11 +292,10 @@ License: GPL-3.0-only
         });
     });
     connect(cm, &comms::scroll_to_map, sv, &slice_view::focus_map_id);
+    connect(cm, &comms::set_group, this, [this](int32_t w, int32_t h) { gv->group_view::set_group(w, h, cm->get_map_ids()); });
     connect(updatet, &QTimer::timeout, [this]() {
         if (!l || !l->is_db_open()) return;
-        for (auto &m : pending_imports) {
-            l->set_map(m);
-        }
+        l->set_maps(pending_imports);
         sv->refresh();
         statusBar()->showMessage(QString("%1 maps imported.").arg(pending_imports.size()));
         pending_imports.clear();

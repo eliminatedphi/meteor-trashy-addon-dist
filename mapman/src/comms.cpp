@@ -61,6 +61,20 @@ focus_map focus_map::from_buffer(uint8_t* buf) {
     return ret;
 }
 
+set_group_pkt set_group_pkt::from_buffer(uint8_t* buf) {
+    set_group_pkt ret;
+    memcpy(&ret.w, buf, 4);
+    memcpy(&ret.h, buf + 4, 4);
+    uint8_t *p = buf + 8;
+    for (int i = 0; i < ret.w * ret.h; ++i) {
+        int32_t v;
+        memcpy(&v, p, 4);
+        ret.mapids.push_back(v);
+        p += 4;
+    }
+    return ret;
+}
+
 std::vector<uint8_t> highlight_map::to_buffer() {
     std::vector<uint8_t> ret;
     if (mapid.size() > 16384) return ret;
@@ -196,6 +210,17 @@ void comms::start_server() {
                             Q_EMIT scroll_to_map(p.mapid);
                             break;
                         }
+                        case SET_GROUP: {
+                            set_group_pkt p = set_group_pkt::from_buffer(dbuf);
+                            if (p.mapids.size() != p.w * p.h) {
+                                fprintf(stderr, "bad set group packet\n");
+                            } else {
+                                fprintf(stderr, "set group %d x %d with %ld maps\n", p.w, p.h, p.mapids.size());
+                                ids = std::move(p.mapids);
+                                Q_EMIT set_group(p.w, p.h);
+                            }
+                            break;
+                        }
                     }
                     close(datafd);
                 }
@@ -226,6 +251,8 @@ void comms::with_queued_container_ids(std::function<void(std::vector<int32_t>&)>
     f(qc);
     mtx.unlock();
 }
+
+const std::vector<int32_t>& comms::get_map_ids() { return ids; }
 
 bool comms::is_connected() { return connected; }
 

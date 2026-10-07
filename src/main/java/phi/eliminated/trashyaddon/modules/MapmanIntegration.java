@@ -29,6 +29,7 @@ import net.minecraft.world.level.saveddata.maps.MapId;
 import net.minecraft.world.level.saveddata.maps.MapItemSavedData;
 import phi.eliminated.trashyaddon.modules.mapmansupport.*;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
 import java.net.StandardProtocolFamily;
@@ -77,6 +78,10 @@ public class MapmanIntegration extends Module {
     private Path socketp;
     private ServerSocketChannel ssc;
 
+    private ItemFrame sgtl;
+    private ItemFrame sgtr;
+    private ItemFrame sgbr;
+
     public static MapmanIntegration instance;
 
     public MapmanIntegration() {
@@ -84,6 +89,18 @@ public class MapmanIntegration extends Module {
         instance = this;
         fcp = null;
     }
+
+    @Nullable
+    public ItemFrame getTopLeftForGroup() { return sgtl; }
+    public void setTopLeftForGroup(ItemFrame ife) { sgtl = ife; }
+
+    @Nullable
+    public ItemFrame getTopRightForGroup() { return sgtr; }
+    public void setTopRightForGroup(ItemFrame ife) { sgtr = ife; }
+
+    @Nullable
+    public ItemFrame getBottomRightForGroup() { return sgbr; }
+    public void setBottomRightForGroup(ItemFrame ife) { sgbr = ife; }
 
     public Color getSlotHighlightForMap(int id) {
         if (!highlightSlotMaps.containsKey(id)) return null;
@@ -136,6 +153,10 @@ public class MapmanIntegration extends Module {
 
     public void focusMap(@NotNull MapId id) {
         messageServer(MapmanServerboundPacket.FOCUS_MAP, new FocusMapPacket(id.id()).encode());
+    }
+
+    public void setGroup(int w, int h, List<Integer> mapIds) {
+        messageServer(MapmanServerboundPacket.SET_GROUP, new SetGroupPacket(w, h, mapIds).encode());
     }
 
     private void messageServer(byte packetType, ByteBuffer buf) {
@@ -404,5 +425,6 @@ public class MapmanIntegration extends Module {
         pq.clear();
         highlightSlotMaps.clear();
         highlightFrameMaps.clear();
+        sgtl = sgtr = sgbr = null;
     }
 }

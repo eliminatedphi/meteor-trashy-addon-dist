@@ -8,6 +8,7 @@ public interface MapmanServerboundPacket {
     byte MAP_FOUND_FRAME = 1;
     byte MAP_FOUND_CONTAINER = 2;
     byte FOCUS_MAP = 3;
+    byte SET_GROUP = 4;
 
     ByteBuffer encode();
 }

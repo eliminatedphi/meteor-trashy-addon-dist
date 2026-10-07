@@ -34,6 +34,7 @@ public:
 public Q_SLOTS:
     void add_group();
     void rem_group();
+    void set_group(int32_t w, int32_t h, const std::vector<int32_t>& ids);
     void update_fields();
     void update_library();
     void painter_drop(int pos, bool populated, int id);

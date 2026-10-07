@@ -18,6 +18,7 @@ public:
     std::vector<int> map_ids();
     bool has_map(int id) const;
     void set_map(const map_t &map);
+    void set_maps(const std::vector<map_t> &maps);
     map_t get_map(int id) const;
     const std::unordered_set<int>& map_idset();
 

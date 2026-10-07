@@ -17,7 +17,8 @@ enum sb_packet_type {
     CLIENT_CONNECT = 0,
     MAP_FOUND_FRAME = 1,
     MAP_FOUND_CONTAINER = 2,
-    FOCUS_MAP = 3
+    FOCUS_MAP = 3,
+    SET_GROUP = 4
 };
 
 enum cb_packet_type {
@@ -62,6 +63,14 @@ struct focus_map {
     static focus_map from_buffer(uint8_t* buf);
 };
 
+struct set_group_pkt {
+    int32_t w;
+    int32_t h;
+    std::vector<int32_t> mapids;
+
+    static set_group_pkt from_buffer(uint8_t* buf);
+};
+
 struct highlight_map {
     // 1 byte | 4 bytes | 4 bytes | 4 * n bytes
     uint8_t flag;
@@ -94,6 +103,7 @@ private:
     std::vector<map_found_frame> qf;
     std::vector<int32_t> qc;
     QMutex mtx;
+    std::vector<int32_t> ids;
 public:
     comms(std::filesystem::path srvsocketp);
     virtual ~comms();
@@ -106,6 +116,8 @@ public:
 
     bool is_connected();
 
+    const std::vector<int32_t>& get_map_ids();
+
 public Q_SLOTS:
     void highlight_maps(std::vector<int32_t> id, uint8_t flag, uint32_t color);
     void request_map(uint8_t flag, int32_t mapid);
@@ -116,6 +128,7 @@ Q_SIGNALS: // all emitting from client listener thread
     void map_found_frm();
     void map_found_cont();
     void scroll_to_map(int32_t id);
+    void set_group(int32_t w, int32_t h);
 };
 
 #endif

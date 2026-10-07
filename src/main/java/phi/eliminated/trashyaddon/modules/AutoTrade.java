@@ -162,6 +162,16 @@ public class AutoTrade extends Module {
         .description("Give a summary of what has been traded once trading is complete.")
         .build()
     );
+    private final Setting<Boolean> debugState = sgGeneral.add(new BoolSetting.Builder()
+        .name("Debug Wait State")
+        .description("Show the current wait state debugging info in module info string.")
+        .build()
+    );
+    private final Setting<Boolean> debugAutoInitiate = sgGeneral.add(new BoolSetting.Builder()
+        .name("Debug Auto Initiate")
+        .description("Show auto initiate debugging info in module info string.")
+        .build()
+    );
 
     private MerchantOffers offers;
     private MerchantScreen screen;
@@ -170,6 +180,7 @@ public class AutoTrade extends Module {
     private int countBefore;
     private int countAfter;
     private UUID lastAutoInteractedVillager;
+    private int autoInitiateTick;
 
     private enum WaitState {
         None,
@@ -188,14 +199,20 @@ public class AutoTrade extends Module {
         itemsBought = new ArrayList<>();
         waitState = WaitState.None;
         lastAutoInteractedVillager = null;
+        autoInitiateTick = 0;
     }
 
-    /*
     @Override
     public String getInfoString() {
-        return waitState.toString() + " " + ticksRemaining;
+        String r = "";
+        if (debugState.get()) {
+            r = r + waitState.toString() + " " + ticksRemaining;
+        }
+        if (debugAutoInitiate.get()) {
+            r = r + (lastAutoInteractedVillager == null ? "(None)" : lastAutoInteractedVillager.toString()) + " " + autoInitiateTick;
+        }
+        return r.isEmpty() ? null : r;
     }
-     */
 
     private boolean isOfferEligible(MerchantOffer o) {
         // I don't give a SHIT to trades that use the second slot
@@ -338,24 +355,26 @@ public class AutoTrade extends Module {
             }
             return;
         }
+        boolean dontreset = false;
         if (mc.hitResult instanceof EntityHitResult ehr) {
             if (ehr.getEntity() instanceof Villager v) {
                 Holder<VillagerProfession> p = v.getVillagerData().profession();
                 if (!(p.is(VillagerProfession.NONE) || p.is(VillagerProfession.NITWIT))) {
                     if (ehr.distanceTo(mc.player) < autoInitiateDistance.get()) {
+                        dontreset = true;
                         if (lastAutoInteractedVillager == null || !v.getUUID().equals(lastAutoInteractedVillager)) {
                             lastAutoInteractedVillager = v.getUUID();
                             mc.gameMode.interact(mc.player, v, ehr, InteractionHand.MAIN_HAND);
                         }
                     }
-                } else {
-                    lastAutoInteractedVillager = null;
                 }
-            } else {
-                lastAutoInteractedVillager = null;
             }
-        } else {
-            lastAutoInteractedVillager = null;
+        }
+        if (!dontreset && lastAutoInteractedVillager != null) {
+            if (++autoInitiateTick > 10) {
+                lastAutoInteractedVillager = null;
+                autoInitiateTick = 0;
+            }
         }
     }
 

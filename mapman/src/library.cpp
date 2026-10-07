@@ -74,6 +74,13 @@ void map_library::set_map(const map_t &map)
     mapidset_valid = false;
     sqlite3_finalize(st);
 }
+void map_library::set_maps(const std::vector<map_t> &maps)
+{
+    sqlite3_exec(db, "begin transaction;", nullptr, nullptr, nullptr);
+    for (const auto& m : maps)
+        set_map(m);
+    sqlite3_exec(db, "commit transaction;", nullptr, nullptr, nullptr);
+}
 
 map_t map_library::get_map(int id) const
 {
@@ -161,6 +168,7 @@ void map_library::set_group(int64_t gid, const map_group_t &g)
 {
     if (!has_group(gid))
         return;
+    sqlite3_exec(db, "begin transaction;", nullptr, nullptr, nullptr);
     sqlite3_stmt *st = nullptr;
     sqlite3_prepare_v2(db, R"sql(
     update groups set title = ?, author = ?, horizontal_count = ?, vertical_count = ? where rowid = ?;
@@ -191,6 +199,7 @@ void map_library::set_group(int64_t gid, const map_group_t &g)
             sqlite3_reset(st);
     }
     sqlite3_finalize(st);
+    sqlite3_exec(db, "commit transaction;", nullptr, nullptr, nullptr);
 }
 
 map_group_t map_library::get_group(int64_t gid) const

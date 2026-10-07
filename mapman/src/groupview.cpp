@@ -182,6 +182,40 @@ void group_view::rem_group()
     refresh_list();
 }
 
+void group_view::set_group(int32_t w, int32_t h, const std::vector<int32_t>& ids)
+{
+    if (!tv->currentIndex().isValid())
+        return;
+    auto &g = current_group;
+    g.hc = w;
+    g.vc = h;
+    g.populated.resize(w * h);
+    g.ids.resize(w * h);
+    std::string s;
+    for (int i = 0; i < g.vc; ++i)
+        for (int j = 0; j < g.hc; ++j) {
+            int p = i * g.hc + j;
+            g.populated[p] = (ids[p] != -1);
+            if (l->has_map(ids[p])) {
+                g.ids[p] = ids[p];
+                if (s.empty()) {
+                    auto m = l->get_map(ids[p]);
+                    s = m.custom_name;
+                }
+            } else {
+                g.populated[p] = false;
+            }
+        }
+    tetitle->setText(QString::fromStdString(s));
+    teauthor->setText("");
+    QSignalBlocker bh(sbh);
+    QSignalBlocker bv(sbv);
+    sbh->setValue(g.hc);
+    sbv->setValue(g.vc);
+    update_map_view();
+    dirty = true;
+}
+
 void group_view::update_fields()
 {
     if (!tv->currentIndex().isValid())

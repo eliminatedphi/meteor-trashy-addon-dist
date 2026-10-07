@@ -54,6 +54,7 @@ public class TrashyAddon extends MeteorAddon {
         Commands.add(new EntityHighlightCommand());
         Commands.add(new MapXeroxCommand());
         Commands.add(new MapFocusCommand());
+        Commands.add(new BACommand());
 
         // HUD
         Hud.get().register(EntityCountHud.INFO);
